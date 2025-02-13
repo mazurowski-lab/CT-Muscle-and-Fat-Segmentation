@@ -112,8 +112,6 @@ output_path/
 | Issue | Solution |
 |-------|----------|
 | Missing vertebrae | Check image coverage |
-| Segmentation errors | Verify image quality |
-| Memory errors | Reduce batch size |
-| CUDA out of memory | Use CPU or reduce batch size |
+| Vertebrae segmentation errors | Verify image orientation |
 
 This tool combines state-of-the-art deep learning models for accurate muscle and fat analysis in medical images. For more information, please refer to the documentation of [nnUNet](https://github.com/MIC-DKFZ/nnUNet) and [TotalSegmentator](https://github.com/wasserth/TotalSegmentator).
