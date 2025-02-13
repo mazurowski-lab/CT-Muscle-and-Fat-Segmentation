@@ -1,0 +1,17 @@
+{
+    "folder_with_segs_from_prev_stage": null,
+    "list_of_lists_or_source_folder": [
+        [
+            "demo/example.nii.gz"
+        ]
+    ],
+    "num_parts": 4,
+    "num_processes_preprocessing": 1,
+    "num_processes_segmentation_export": 1,
+    "output_folder_or_list_of_truncated_output_files": [
+        "results/example_segmentation.nii.gz"
+    ],
+    "overwrite": false,
+    "part_id": 0,
+    "save_probabilities": false
+}

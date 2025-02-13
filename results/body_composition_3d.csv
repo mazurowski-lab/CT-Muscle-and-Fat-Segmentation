@@ -1,0 +1,2 @@
+filename,muscle_volume_mm3,muscle_density_hu,sfat_volume_mm3,vfat_volume_mm3,mfat_volume_mm3,total_fat_volume_mm3,body_volume_mm3,body_height_mm
+example.nii.gz,2632854.0954589844,33.85018997115019,3202966.1560058594,3641052.032470703,42664.61181640625,6886682.800292969,14612518.768310547,130.0
