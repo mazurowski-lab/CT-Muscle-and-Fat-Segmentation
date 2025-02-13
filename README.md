@@ -9,3 +9,5 @@ This is the official code for our paper:
 
 where we developed an open-source method for segmenting skeletal muscle, subcutaneous adipose tissue (SAT), and visceral adipose tissue (VAT) across the chest, abdomen, and pelvis in axial CT images.This method provides various body composition metrics, including muscle density, visceral-to-subcutaneous fat (VAT/SAT) ratio, muscle area/volume, and skeletal muscle index (SMI). It supports both 2D assessments at the L3 level and 3D assessments spanning from T12 to L4.
 ***
+Below is the tutorial which explains how to use our automated muscle and fat segmentation tool.
+
