@@ -17,6 +17,103 @@ Below is the tutorial that explains how to use our automated muscle and fat segm
 conda create -n muscle_seg python=3.12
 conda activate muscle_se
 ```
+2. Install required packages:
+```python
+pip install -r requirements.txt
+```
+## Script Overview
 
+The script (`predict_muscle_fat.py`) performs three main tasks:
+1. Muscle and fat segmentation using nnUNet
+2. Vertebrae detection using TotalSegmentator
+3. Body composition analysis (2D at L3 level and/or 3D between T12-L4)
 
+## Usage
 
+### Basic Command
+```bash
+python predict_muscle_fat.py --input <input_path> --output <output_path>
+```
+
+### Command Line Arguments
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `--input` | Path to input NIfTI file or folder | "demo" |
+| `--output` | Path for saving segmentation results | "results" |
+| `--save_probabilities` | Save probability maps | False |
+| `--overwrite` | Overwrite existing predictions | False |
+| `--checkpoint_type` | Use 'best' or 'final' checkpoint | "final" |
+| `--body_composition_type` | Choose '2D', '3D', 'both', or 'None' | "both" |
+| `--output_body_composition` | Path for body composition metrics | None |
+
+### Examples
+
+1. Process a single file:
+```bash
+python predict_muscle_fat.py --input patient001.nii.gz --output results/
+```
+
+2. Process a directory of images:
+```bash
+python predict_muscle_fat.py --input dataset/images/ --output results/ --body_composition_type both
+```
+
+3. Use best checkpoint and save probabilities:
+```bash
+python predict_muscle_fat.py --input dataset/images/ --output results/ --checkpoint_type best --save_probabilities True
+```
+## Output Structure
+
+### Directory Structure
+```
+output_path/
+├── input_name_segmentation.nii.gz    # Muscle/fat segmentation
+└── input_name_vertebrae_segmentation/  # Vertebrae segmentation
+    ├── vertebrae_T12.nii.gz
+    ├── vertebrae_L3.nii.gz
+    └── vertebrae_L4.nii.gz
+```
+
+### Body Composition Files
+```
+output_path/
+├── body_composition_2d.csv   # L3-level metrics
+└── body_composition_3d.csv   # T12-L4 metrics
+```
+
+## Metrics
+
+### 2D Metrics (at L3)
+- `muscle_area_mm2`: Muscle area at L3 level
+- `muscle_density_hu`: Average muscle density in Hounsfield units
+- `sfat_area_mm2`: Subcutaneous fat area
+- `vfat_area_mm2`: Visceral fat area
+- `mfat_area_mm2`: Muscle fat area
+- `total_fat_area_mm2`: Total fat area
+- `body_area_mm2`: Total body area
+
+### 3D Metrics (T12-L4)
+- `muscle_volume_mm3`: Muscle volume
+- `muscle_density_hu`: Average muscle density
+- `sfat_volume_mm3`: Subcutaneous fat volume
+- `vfat_volume_mm3`: Visceral fat volume
+- `mfat_volume_mm3`: Muscle fat volume
+- `total_fat_volume_mm3`: Total fat volume
+- `body_volume_mm3`: Total body volume
+- `body_height_mm`: Height between T12 and L4
+
+## Tips and Troubleshooting
+### Input Data Requirements
+- Use NIfTI format (.nii.gz)
+- Ensure proper orientation (typically axial)
+- Check image quality and contrast
+- Check image direction (align with TotalSegmentator requirement)
+### Common Issues
+| Issue | Solution |
+|-------|----------|
+| Missing vertebrae | Check image coverage |
+| Segmentation errors | Verify image quality |
+| Memory errors | Reduce batch size |
+| CUDA out of memory | Use CPU or reduce batch size |
+
+This tool combines state-of-the-art deep learning models for accurate muscle and fat analysis in medical images. For more information, please refer to the documentation of [nnUNet](https://github.com/MIC-DKFZ/nnUNet) and [TotalSegmentator](https://github.com/wasserth/TotalSegmentator).
