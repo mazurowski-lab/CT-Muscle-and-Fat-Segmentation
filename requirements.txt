@@ -1,0 +1,10 @@
+torch>=2.4.0
+nibabel>=5.2.1
+batchgenerators>=0.25.1
+nnunetv2>=2.5.1
+totalsegmentator>=2.6.0
+pandas>=2.2.2
+numpy>=1.26.4
+SimpleITK>=2.3.1
+matplotlib>=3.9.2
+argparse>=1.4.0
