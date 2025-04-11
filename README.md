@@ -4,7 +4,7 @@
 ---
 [![arXiv](https://img.shields.io/badge/arXiv-2502.09779-b31b1b.svg)](https://arxiv.org/abs/2502.09779)
 
-check the model weight at https://drive.google.com/drive/folders/1q3_v4a-P9hIAphnOhhuSoL5FcJ7IIsDX?usp=sharing
+Download the required pre-trained model weights from [this Google Drive folder](https://drive.google.com/drive/folders/1q3_v4a-P9hIAphnOhhuSoL5FcJ7IIsDX?usp=sharing). Make sure to select the appropriate files for your configuration.
 
 This is the official code for our paper:  
 **Automated Muscle and Fat Segmentation in Computed Tomography for Comprehensive Body Composition Analysis**
