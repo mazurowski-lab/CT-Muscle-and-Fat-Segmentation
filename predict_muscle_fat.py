@@ -149,7 +149,7 @@ def main(args):
     if os.path.isfile(input_path):
         input_files = [[input_path]]  # Single file in nested list
         if os.path.isdir(output_path):
-            output_files = [join(output_path, os.path.basename(f).replace(".nii.gz", "_segmentation.nii.gz")) for f in input_files[0]]
+            output_files = [join(output_path, os.path.basename(input_path).replace(".nii.gz", ""))]
         else:
             output_files = [output_path]  # Single output file
     elif os.path.isdir(input_path):
@@ -159,21 +159,21 @@ def main(args):
         if os.path.isfile(output_path):
             raise ValueError("Output cannot be a file when input is a folder.")
         os.makedirs(output_path, exist_ok=True)
-        output_files = [join(output_path, os.path.basename(f).replace(".nii.gz", "_segmentation.nii.gz")) for f in input_files[0]]
+        # Use base name without extension for output files (following nnUNet convention)
+        output_files = [join(output_path, os.path.basename(f[0]).replace(".nii.gz", "")) for f in input_files]
     else:
         raise ValueError("Input path must be either a valid file or directory.")
     
-    # Perform prediction
     predictor.predict_from_files(
         input_files,
         output_files,
         save_probabilities=args.save_probabilities,
         overwrite=args.overwrite,
-        num_processes_preprocessing=len(input_files),  # Reduce processes to avoid RAM overuse
-        num_processes_segmentation_export=len(output_files),
+        num_processes_preprocessing = min(args.maxprocesses, len(input_files)),
+        num_processes_segmentation_export = min(args.maxprocesses, len(output_files)),
         folder_with_segs_from_prev_stage=None,
-        num_parts=4,
-        part_id=0
+        num_parts=args.num_parts,
+        part_id=args.part_id
     )
 
     print("Segmentation completed! Results saved in:", output_path)
@@ -191,10 +191,12 @@ def main(args):
     if args.body_composition_type == "2D" or args.body_composition_type == "both":
         # Calculate 2D body composition metrics
         metrics_2d = []
-        for input_file in input_files[0]:
+        for input_file_list in input_files:
+            input_file = input_file_list[0]  # Each list contains one file
+            segment_vertebrae(input_file, output_body_composition)
             # Get correct paths for segmentation and vertebrae files
             base_name = os.path.basename(input_file).replace('.nii.gz', '')
-            seg_file = os.path.join(output_path, f"{base_name}_segmentation.nii.gz")
+            seg_file = os.path.join(output_path, f"{base_name}.nii.gz")
             vertebrae_path = os.path.join(output_body_composition, 
                                         f"{base_name}_vertebrae_segmentation")
             
@@ -217,10 +219,11 @@ def main(args):
     if args.body_composition_type == "3D" or args.body_composition_type == "both":
         # Calculate 3D body composition metrics
         metrics_3d = []
-        for input_file in input_files[0]:
+        for input_file_list in input_files:
+            input_file = input_file_list[0]  # Each list contains one file
             # Get correct paths for segmentation and vertebrae files
             base_name = os.path.basename(input_file).replace('.nii.gz', '')
-            seg_file = os.path.join(output_path, f"{base_name}_segmentation.nii.gz")
+            seg_file = os.path.join(output_path, f"{base_name}.nii.gz")
             vertebrae_path = os.path.join(output_body_composition,
                                         f"{base_name}_vertebrae_segmentation")
             
@@ -250,9 +253,12 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=str, default="results", help="Path to output file or folder for segmentation results (default: results)")
     parser.add_argument("--save_probabilities", type=bool, default=False, help="Whether to save probability maps (default: False)")
     parser.add_argument("--overwrite", type=bool, default=False, help="Whether to overwrite existing predictions (default: False)")
-    parser.add_argument("--checkpoint_type", type=str, default="final", help="Specify 'best' to use checkpoint_best.pth or 'final' to use checkpoint_final.pth (default: final)")
+    parser.add_argument("--checkpoint_type", type=str, default="best", help="Specify 'best' to use checkpoint_best.pth or 'final' to use checkpoint_final.pth (default: final)")
     parser.add_argument("--body_composition_type", type=str, default="both", help="Specify '2D' for 2D body composition, '3D' for 3D body composition, 'both' for both, 'None' for no body composition (default: both)")
     parser.add_argument("--output_body_composition", type=str, help="Path to output body composition metric file. If --output is a folder, this will be set to the same folder. Otherwise, it defaults to 'results'.""Path to output body composition metric file")
+    parser.add_argument("--maxprocesses", type=int, default=4, help="number of parallel processes for preprocessing and segmentation export")
+    parser.add_argument("--num_parts", type=int, default=1, help="Number of parts to split the prediction workload into. Use this for parallel prediction across multiple processes or nodes.")
+    parser.add_argument("--part_id", type=int, default=0, help="ID of the current part to process (0 <= part_id < num_parts).")
     # Parse arguments
     args = parser.parse_args()
 
