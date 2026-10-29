@@ -185,15 +185,15 @@ def main(args):
         )
         os.makedirs(output_body_composition, exist_ok=True)
         
-        for input_file in input_files[0]:
-                segment_vertebrae(input_file, output_body_composition)
+        for input_file_list in input_files:
+            input_file = input_file_list[0]
+            segment_vertebrae(input_file, output_body_composition)
 
     if args.body_composition_type == "2D" or args.body_composition_type == "both":
         # Calculate 2D body composition metrics
         metrics_2d = []
         for input_file_list in input_files:
             input_file = input_file_list[0]  # Each list contains one file
-            segment_vertebrae(input_file, output_body_composition)
             # Get correct paths for segmentation and vertebrae files
             base_name = os.path.basename(input_file).replace('.nii.gz', '')
             seg_file = os.path.join(output_path, f"{base_name}.nii.gz")
